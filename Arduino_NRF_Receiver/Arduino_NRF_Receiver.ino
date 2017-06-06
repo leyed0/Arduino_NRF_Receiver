@@ -1,6 +1,14 @@
 #include "RF24.h"
 #include "HBridge.h"
+#include <avr/wdt.h>
 
+//pwm pins: 3, 5, 6, 9, 10, 11
+//------------ 5 and 6 is low priority
+//The frequency of the PWM signal on most pins is approximately 490 Hz
+//On the Uno and similar boards, pins 5 and 6 have a frequency of approximately 980 Hz
+
+
+//opts - em desenvolvimento para troca de dados
 enum opts
 {
 	COUNTERCLOCKWISE = 0b0000,
@@ -22,7 +30,7 @@ enum opts
 #define ROBOT_ID 0
 
 struct command {
-	unsigned char opt1, verify;
+	unsigned char opt1;
 	uint8_t opt2, opt3;
 	bool dir;
 };
@@ -69,5 +77,38 @@ void loop() {
 		default:
 			break;
 		}
+	}
+}
+
+void On_Error(String message) {
+	pinMode(10, OUTPUT);
+	while (true) {
+		if (Serial.available()) {
+			switch (Serial.read()) {
+			case 'p':
+				Serial.println(message);
+				Serial.println("'c' to continue, 'r' to reboot");
+				while (!Serial.available());
+				break;
+			case 'c':
+				return;
+				break;
+			case 'r':
+				Reboot();
+				break;
+			default:
+
+			}
+		}
+		digitalWrite(10, !digitalRead(10));
+		delay(500);
+	}
+}
+
+void Reboot()
+{
+	wdt_enable(WDTO_15MS);
+	while (1)
+	{
 	}
 }

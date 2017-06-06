@@ -10,7 +10,9 @@ void HBridge::init()
 
 }
 
+//for the encoder the code gona use 2 more pins per motor
 //Set the pins used by the motor. p1, p2 = input pins acording to the direction. p3 = Speed Pin(pwm)
+//total: 5 pins per motor, 4 general and 1 PWM
 void HBridge::Set(int p1, int p2, int sp3) {
 	Pin[0] = p1;
 	Pin[1] = p2;
