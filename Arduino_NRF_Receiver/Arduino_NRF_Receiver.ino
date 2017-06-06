@@ -1,12 +1,6 @@
 #include "RF24.h"
 #include "HBridge.h"
 
-#define BOTID = 0;
-
-//BOTID identifica o robo atual
-//3 bits para identificar o robo
-//1 bit para indicar direção
-
 enum opts
 {
 	COUNTERCLOCKWISE = 0b0000,
@@ -25,22 +19,24 @@ enum opts
 	ROBOT7,
 };
 
-struct comando {
-	unsigned char opt1;
+#define ROBOT_ID 0
+
+struct command {
+	unsigned char opt1, verify;
 	uint8_t opt2, opt3;
 	bool dir;
 };
 
-comando comm;
+command comm;
 RF24 NRF(7, 8);
-const uint64_t pipe = 0xE8E8F0F0E1LL;
-HBridge motor[2];	 
+const uint64_t pipe[3] = { 0xE8E8F0F0E1LL,0xE8E8F0F0E10L,0xE8E8F0F0E0LL };
+HBridge motor[2];
 // the setup function runs once when you press reset or power the board
 void setup() {
-	motor[0].Set(2, 4, 10);
-	motor[1].Set(5, 6, 9);
 	Serial.begin(115200);
 	Serial.println("Receiver!");
+	motor[0].Set(2, 4, 10);
+	motor[1].Set(5, 6, 9);
 	NRF.begin();
 	//new code - setup
 	NRF.setPALevel(RF24_PA_MAX);
@@ -48,7 +44,7 @@ void setup() {
 	NRF.setChannel(124);
 	NRF.setRetries(0, 10);
 	//end of new code
-	NRF.openReadingPipe(1, pipe);
+	NRF.openReadingPipe(ROBOT_ID, pipe);
 	NRF.startListening();
 	Serial.println("Setup Ok");
 }
@@ -58,7 +54,7 @@ void loop() {
 	if (NRF.available())
 	{
 		NRF.read(&comm, sizeof(comm));
-		Serial.println("received!");
+		Serial.println("Received!");
 		switch (comm.opt1)
 		{
 		case '+':
@@ -73,15 +69,5 @@ void loop() {
 		default:
 			break;
 		}
-	}
-}
-
-
-void error() {
-	while (true) {
-		digitalWrite(10, true);
-		delay(100);
-		digitalWrite(10, false);
-		delay(100);
 	}
 }
