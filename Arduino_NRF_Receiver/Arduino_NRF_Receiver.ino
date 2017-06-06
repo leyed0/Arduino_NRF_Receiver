@@ -97,7 +97,7 @@ void On_Error(String message) {
 				Reboot();
 				break;
 			default:
-
+				break;
 			}
 		}
 		digitalWrite(10, !digitalRead(10));
