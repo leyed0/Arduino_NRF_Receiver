@@ -1,0 +1,24 @@
+//opts - em desenvolvimento para troca de dados
+enum opts
+{
+	COUNTERCLOCKWISE = 0b0000,
+	CLOCKWISE,
+	MOTOR0 = 0b0000,
+	MOTOR1 = 0b0010,
+	MOTOR2,
+	MOTOR3,
+	ROBOT0 = 0b0000,
+	ROBOT1 = 0b1000,
+	ROBOT2,
+	ROBOT3,
+	ROBOT4,
+	ROBOT5,
+	ROBOT6,
+	ROBOT7,
+};
+
+struct command {
+	unsigned char opt1;
+	uint8_t opt2, opt3;
+	bool dir;
+};

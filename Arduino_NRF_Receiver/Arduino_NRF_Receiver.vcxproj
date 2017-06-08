@@ -96,6 +96,9 @@
     <ClCompile Include="HBridge.cpp" />
     <ClCompile Include="RF24.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="future coding.txt" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

@@ -7,40 +7,24 @@
 //The frequency of the PWM signal on most pins is approximately 490 Hz
 //On the Uno and similar boards, pins 5 and 6 have a frequency of approximately 980 Hz
 
+#define ROBOT_ID 1
 
-//opts - em desenvolvimento para troca de dados
-enum opts
-{
-	COUNTERCLOCKWISE = 0b0000,
-	CLOCKWISE,
-	MOTOR0 = 0b0000,
-	MOTOR1 = 0b0010,
-	MOTOR2,
-	MOTOR3,
-	ROBOT0 = 0b0000,
-	ROBOT1 = 0b1000,
-	ROBOT2,
-	ROBOT3,
-	ROBOT4,
-	ROBOT5,
-	ROBOT6,
-	ROBOT7,
+struct MotorCmd {
+	uint8_t speed[2];
+	bool direction[2];
 };
 
-#define ROBOT_ID 0
-
-struct command {
-	unsigned char opt1;
-	uint8_t opt2, opt3;
-	bool dir;
-};
-
-command comm;
 RF24 NRF(7, 8);
 const uint64_t pipe[3] = { 0xE8E8F0F0E1LL,0xE8E8F0F0E10L,0xE8E8F0F0E0LL };
+
 HBridge motor[2];
+String msg;
+MotorCmd MtCmd;
+
+unsigned char CMDID;
 // the setup function runs once when you press reset or power the board
 void setup() {
+	wdt_disable();
 	Serial.begin(115200);
 	Serial.println("Receiver!");
 	motor[0].Set(2, 4, 10);
@@ -52,7 +36,7 @@ void setup() {
 	NRF.setChannel(124);
 	NRF.setRetries(0, 10);
 	//end of new code
-	NRF.openReadingPipe(ROBOT_ID, pipe);
+	NRF.openReadingPipe(1, pipe[ROBOT_ID]);
 	NRF.startListening();
 	Serial.println("Setup Ok");
 }
@@ -61,18 +45,28 @@ void setup() {
 void loop() {
 	if (NRF.available())
 	{
-		NRF.read(&comm, sizeof(comm));
-		Serial.println("Received!");
-		switch (comm.opt1)
+		NRF.read(&CMDID, sizeof(CMDID));
+		Serial.print("Receiveing ");
+		Serial.print(char(CMDID));
+		Serial.println(" command");
+
+
+		while (!NRF.available());
+
+		switch (CMDID)
 		{
-		case '+':
-			motor[comm.opt2].SpeedAdd(comm.opt3, comm.dir);
+		case 'M':
+			NRF.read(&MtCmd, sizeof(MtCmd));
+			Serial.println(MtCmd.speed[0]);
+			Serial.println(MtCmd.direction[0]);
+			Serial.println(MtCmd.speed[1]);
+			Serial.println(MtCmd.direction[1]);
+
+			if (motor[0].SpeedGet() != MtCmd.speed[0] || motor[0].DirGet() != MtCmd.direction[0]) motor[0].SpeedSet(MtCmd.speed[0], MtCmd.direction[0]);
+			if (motor[1].SpeedGet() != MtCmd.speed[1] || motor[1].DirGet() != MtCmd.direction[1]) motor[1].SpeedSet(MtCmd.speed[1], MtCmd.direction[1]);
 			break;
-		case '-':
-			motor[comm.opt2].Break();
-			break;
-		case 's':
-			motor[comm.opt2].SpeedSet(comm.opt3, comm.dir);
+		case 'R':
+			Reboot();
 			break;
 		default:
 			break;
