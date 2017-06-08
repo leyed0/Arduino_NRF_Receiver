@@ -88,6 +88,7 @@
   <ItemGroup>
     <ClInclude Include="HBridge.h" />
     <ClInclude Include="nRF24L01.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="RF24.h" />
     <ClInclude Include="RF24_config.h" />
     <ClInclude Include="__vm\.Arduino_NRF_Receiver.vsarduino.h" />
@@ -98,6 +99,9 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="future coding.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Arduino_NRF_Receiver.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
