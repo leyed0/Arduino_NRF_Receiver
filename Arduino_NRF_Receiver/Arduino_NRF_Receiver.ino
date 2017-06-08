@@ -20,6 +20,12 @@ void setup() {
 	Serial.begin(9600);
 	Serial.println("Receiver!");
 	NRF.begin();
+	//new code - setup
+	NRF.setPALevel(RF24_PA_MAX);
+	NRF.setDataRate(RF24_2MBPS);
+	NRF.setChannel(124);
+	NRF.setRetries(0, 10);
+	//end of new code
 	NRF.openReadingPipe(1, pipe);
 	NRF.startListening();
 	Serial.println("Setup Ok");
