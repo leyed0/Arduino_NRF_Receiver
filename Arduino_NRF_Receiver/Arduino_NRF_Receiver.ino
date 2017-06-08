@@ -15,6 +15,7 @@ struct MotorCmd {
 };
 
 RF24 NRF(7, 8);
+const uint64_t ack = 0x08E8F0F0E1LL;
 const uint64_t pipe[3] = { 0xE8E8F0F0E1LL,0xE8E8F0F0E10L,0xE8E8F0F0E0LL };
 
 HBridge motor[2];
